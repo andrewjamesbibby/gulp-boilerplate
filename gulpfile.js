@@ -8,7 +8,9 @@ var cleanCSS 	= require('gulp-clean-css');
 var del 		= require('del');
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync').create();
-
+var revReplace	= require('gulp-rev-replace');
+var rev			= require('gulp-rev');
+var filter      = require('gulp-filter');
 
 gulp.task('sass', function() {
 	return gulp.src([
@@ -30,11 +32,18 @@ gulp.task('browserSync', function() {
 })
 
 gulp.task('useref', function(){
-  return gulp.src('src/*.html')
-    .pipe(useref())
-    .pipe(gulpIf('*.js', uglify()))
-    .pipe(gulpIf('*.css', cleanCSS()))
-    .pipe(gulp.dest('dist'))
+
+	var indexHtmlFilter = filter(['**/*', '!**/index.html'], { restore: true });
+	
+	return gulp.src('src/*.html')
+    	.pipe(useref())
+    	.pipe(gulpIf('*.js', uglify()))
+    	.pipe(gulpIf('*.css', cleanCSS()))
+    	.pipe(indexHtmlFilter)
+    	.pipe(rev())    
+    	.pipe(indexHtmlFilter.restore)          
+    	.pipe(revReplace())    
+    	.pipe(gulp.dest('dist'))
 });
 
 gulp.task('fonts', function(){

@@ -1,4 +1,7 @@
 
-body {
-	background-color:blue;
-}
+
+/* main.scss import all css modules here */
+
+@import 'reset';
+@import 'core';
+
